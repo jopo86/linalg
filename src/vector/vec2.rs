@@ -1,5 +1,6 @@
+use super::super::matrix::Mat;
 use num::Float;
-use std::ops::{Add, AddAssign, Neg, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Default)]
 pub struct Vec2<T: Float> {
@@ -79,6 +80,14 @@ impl<T: Float> SubAssign for Vec2<T> {
     }
 }
 
+impl<T: Float, const C: usize> Mul<Mat<T, 1, C>> for Vec2<T> {
+    type Output = Mat<T, 2, C>;
+
+    fn mul(self, rhs: Mat<T, 1, C>) -> Self::Output {
+        Mat::from(self) * rhs
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -121,5 +130,13 @@ mod tests {
         let vec_a = Vec2::new(5.0, 5.0);
         let vec_b = Vec2::new(1.0, 3.0);
         assert_eq!(vec_a.dot(vec_b), 20.0);
+    }
+
+    #[test]
+    fn mul_mat() {
+        assert_eq!(
+            Vec2::new(1.0, 2.0) * Mat::new(&[[4.0, 3.0, 2.0, 1.0]]),
+            Mat::new(&[[4.0, 3.0, 2.0, 1.0], [8.0, 6.0, 4.0, 2.0],])
+        )
     }
 }
